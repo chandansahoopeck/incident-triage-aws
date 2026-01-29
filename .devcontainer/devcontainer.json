@@ -1,0 +1,24 @@
+{
+  "name": "AWS Incident Triage Dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/guiyomh/features/terraform:1": {},
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "hashicorp.terraform",
+        "ms-python.python",
+        "amazonwebservices.aws-toolkit-vscode"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "AWS_REGION": "us-east-1",
+    "TF_VAR_env": "dev"
+  },
+  // CRITICAL: Mount AWS credentials securely (never commit!)
+  "postCreateCommand": "mkdir -p ~/.aws && echo '[default]\\nregion = us-east-1' > ~/.aws/config"
+}
