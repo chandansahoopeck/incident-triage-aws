@@ -1,35 +1,38 @@
 {
-  "name": "Python, Go, AWS, Terraform Dev Container (Stable)",
-  // Use a specific, stable Debian release (bullseye) to avoid potential repo issues
-  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye", 
+  "name": "Python, AWS, Terraform, Docker (No Go Yet)",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
   "features": {
-    "ghcr.io/devcontainers/features/go:1": {
-      "version": "latest"
-    },
     "ghcr.io/devcontainers/features/aws-cli:1": {
       "version": "latest"
     },
     "ghcr.io/devcontainers/features/terraform:1": {
       "version": "latest"
     },
-    // Explicitly add Docker-in-Docker or Docker-outside-of-Docker feature
-    // Using docker-outside-of-docker as it's generally more reliable in Codespaces
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
       "version": "latest",
-      "moby": true // Install Moby (Docker's open source engine)
+      "moby": true
     }
   },
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "golang.go",
+        "golang.go", // Still install the VS Code extension
         "hashicorp.terraform",
         "amazonwebservices.aws-toolkit-vscode",
-        "ms-azuretools.vscode-docker" // Useful Docker extension
+        "ms-azuretools.vscode-docker"
       ]
     }
   },
-  // Optional: Run commands after the container is created
-  "postCreateCommand": "pip install --upgrade pip && go version && aws --version && terraform version"
+  // Install Go manually after the container is built to bypass the problematic feature
+  "postCreateCommand": "set -e; \
+                       curl -O -L https://golang.org/dl/go1.23.5.linux-amd64.tar.gz; \
+                       sudo rm -rf /usr/local/go; \
+                       sudo tar -C /usr/local -xzf go1.23.5.linux-amd64.tar.gz; \
+                       echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/vscode/.bashrc; \
+                       source /home/vscode/.bashrc; \
+                       go version; \
+                       pip install --upgrade pip; \
+                       aws --version; \
+                       terraform version;"
 }
