@@ -1,29 +1,47 @@
 {
-  "name": "Python, AWS, Terraform, Docker, Go (Manual Install)",
+  "name": "Custom Python, Go, AWS, Terraform, Docker Environment",
+  // Use the most basic image possible to minimize pre-existing problematic repos
   "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
   "features": {
-    "ghcr.io/devcontainers/features/aws-cli:1": {
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/terraform:1": {
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-      "version": "latest",
-      "moby": true
-    }
+    // No features that might trigger apt-get update and hit the Yarn repo issue
   },
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "golang.go", // Still install the VS Code extension for Go
+        "golang.go",
         "hashicorp.terraform",
         "amazonwebservices.aws-toolkit-vscode",
         "ms-azuretools.vscode-docker"
       ]
     }
   },
-  // Single line command to install Go manually after container setup
-  "postCreateCommand": "set -e; curl -fsSL 'https://golang.org/dl/go1.23.5.linux-amd64.tar.gz' -o /tmp/go.tar.gz; sudo rm -rf /usr/local/go; sudo tar -C /usr/local -xzf /tmp/go.tar.gz; echo 'export PATH=\"$PATH:/usr/local/go/bin\"' >> /home/vscode/.bashrc; source /home/vscode/.bashrc; go version; pip install --upgrade pip; aws --version; terraform version;"
+  "postCreateCommand": "set -e; \
+                       echo 'Starting manual installations...'; \
+                       # Install system dependencies needed for other tools \
+                       apt-get update && apt-get install -y curl unzip wget gpg sudo; \
+                       # Install Go \
+                       echo 'Installing Go...'; \
+                       curl -fsSL 'https://golang.org/dl/go1.23.5.linux-amd64.tar.gz' -o /tmp/go.tar.gz; \
+                       tar -C /usr/local -xzf /tmp/go.tar.gz; \
+                       echo 'export PATH=\"$PATH:/usr/local/go/bin\"' >> /home/vscode/.bashrc; \
+                       # Install AWS CLI v2 \
+                       echo 'Installing AWS CLI...'; \
+                       curl -fsSL 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o /tmp/awscliv2.zip; \
+                       unzip /tmp/awscliv2.zip -d /tmp; \
+                       /tmp/aws/install; \
+                       rm /tmp/awscliv2.zip /tmp/aws; \
+                       # Install Terraform \
+                       echo 'Installing Terraform...'; \
+                       wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg; \
+                       echo 'deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com bullseye main' | tee /etc/apt/sources.list.d/hashicorp.list; \
+                       apt-get update && apt-get install -y terraform; \
+                       # Verify installations \
+                       echo 'Verifying installations...'; \
+                       go version; \
+                       aws --version; \
+                       terraform version; \
+                       # Upgrade pip \
+                       pip install --upgrade pip; \
+                       echo 'All tools installed successfully.';"
 }
