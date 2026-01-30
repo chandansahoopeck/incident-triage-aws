@@ -1,24 +1,17 @@
 {
-  "name": "AWS Incident Triage Dev",
+  "name": "Incident Triage Dev",
   "image": "mcr.microsoft.com/devcontainers/python:3.11",
   "features": {
-    "ghcr.io/devcontainers/features/aws-cli:2": {},
-    "ghcr.io/devcontainers/features/terraform:1": {},
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {}
   },
   "customizations": {
     "vscode": {
       "extensions": [
-        "hashicorp.terraform",
         "ms-python.python",
-        "amazonwebservices.aws-toolkit-vscode"
+        "hashicorp.terraform",
+        "ms-azuretools.vscode-docker"
       ]
     }
-  },
-  "remoteEnv": {
-    "AWS_REGION": "us-east-1",
-    "PROJECT_HOME": "/workspaces/incident-triage-aws"
-  },
-  // NEVER download models/data to Codespaces
-  "postCreateCommand": "pip install --user awscli boto3 && echo 'Storage-safe dev environment ready!'"
+  }
 }
