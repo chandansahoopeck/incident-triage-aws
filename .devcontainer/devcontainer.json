@@ -1,5 +1,5 @@
 {
-  "name": "Python, AWS, Terraform, Docker (No Go Yet)",
+  "name": "Python, AWS, Terraform, Docker, Go (Manual Install)",
   "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
   "features": {
     "ghcr.io/devcontainers/features/aws-cli:1": {
@@ -17,22 +17,13 @@
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "golang.go", // Still install the VS Code extension
+        "golang.go", // Still install the VS Code extension for Go
         "hashicorp.terraform",
         "amazonwebservices.aws-toolkit-vscode",
         "ms-azuretools.vscode-docker"
       ]
     }
   },
-  // Install Go manually after the container is built to bypass the problematic feature
-  "postCreateCommand": "set -e; \
-                       curl -O -L https://golang.org/dl/go1.23.5.linux-amd64.tar.gz; \
-                       sudo rm -rf /usr/local/go; \
-                       sudo tar -C /usr/local -xzf go1.23.5.linux-amd64.tar.gz; \
-                       echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/vscode/.bashrc; \
-                       source /home/vscode/.bashrc; \
-                       go version; \
-                       pip install --upgrade pip; \
-                       aws --version; \
-                       terraform version;"
+  // Single line command to install Go manually after container setup
+  "postCreateCommand": "set -e; curl -fsSL 'https://golang.org/dl/go1.23.5.linux-amd64.tar.gz' -o /tmp/go.tar.gz; sudo rm -rf /usr/local/go; sudo tar -C /usr/local -xzf /tmp/go.tar.gz; echo 'export PATH=\"$PATH:/usr/local/go/bin\"' >> /home/vscode/.bashrc; source /home/vscode/.bashrc; go version; pip install --upgrade pip; aws --version; terraform version;"
 }
