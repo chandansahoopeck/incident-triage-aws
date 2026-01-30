@@ -1,6 +1,7 @@
 {
-  "name": "Python, Go, AWS, Terraform Dev Container",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "name": "Python, Go, AWS, Terraform Dev Container (Stable)",
+  // Use a specific, stable Debian release (bullseye) to avoid potential repo issues
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye", 
   "features": {
     "ghcr.io/devcontainers/features/go:1": {
       "version": "latest"
@@ -10,6 +11,12 @@
     },
     "ghcr.io/devcontainers/features/terraform:1": {
       "version": "latest"
+    },
+    // Explicitly add Docker-in-Docker or Docker-outside-of-Docker feature
+    // Using docker-outside-of-docker as it's generally more reliable in Codespaces
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "version": "latest",
+      "moby": true // Install Moby (Docker's open source engine)
     }
   },
   "customizations": {
@@ -18,9 +25,11 @@
         "ms-python.python",
         "golang.go",
         "hashicorp.terraform",
-        "amazonwebservices.aws-toolkit-vscode"
+        "amazonwebservices.aws-toolkit-vscode",
+        "ms-azuretools.vscode-docker" // Useful Docker extension
       ]
     }
   },
-  "postCreateCommand": "pip install --upgrade pip"
+  // Optional: Run commands after the container is created
+  "postCreateCommand": "pip install --upgrade pip && go version && aws --version && terraform version"
 }
